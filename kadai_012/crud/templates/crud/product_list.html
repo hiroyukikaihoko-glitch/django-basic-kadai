@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}商品一覧{% endblock %}
+{% block content %}
+<h1>商品一覧</h1>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>商品名</th>
+            <th>価格</th>
+            <th>カテゴリ</th>
+            <th>商品画像</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in object_list %}
+        <!-- 💡 行をダブルクリックすると詳細画面（name="detail"）へ遷移させます -->
+        <tr ondblclick="location.href='{% url 'detail' pk=product.pk %}'" style="cursor: pointer;">
+            <td>{{ product.name }}</td>
+            <td>{{ product.price }} 円</td>
+            <td>{{ product.category }}</td>
+            <td>
+            {# 画像の登録があり、かつデフォルト画像の名前ではない場合（個別アップロード時） #}
+            {% if product.img and product.img != 'noImage.png' %}
+                <img src="{{ product.img.url }}" style="width: 100px; height: auto;">
+            {% else %}
+                {# それ以外（デフォルト画像の場合など）は、固定で media_local の画像を表示 #}
+                <img src="/media/noImage.png" style="width: 100px; height: auto;">
+            {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{{ page_obj.number }} / {{ page_obj.paginator.num_pages }} ページ<br>
+
+{# 前へ #}
+{% if page_obj.has_previous %}
+<a href="?page=1">&laquo; 先頭</a>
+<a href="?page={{ page_obj.previous_page_number }}">前へ</a>
+{% endif %}
+
+{# 次へ #}
+{% if page_obj.has_next %}
+<a href="?page={{ page_obj.next_page_number }}">次へ</a>
+<a href="?page={{ page_obj.paginator.num_pages }}">最後 &raquo;</a>
+{% endif %}
+{% endblock %}
